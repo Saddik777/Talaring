@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Chat List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button.delete {
+            background-color: #dc3545;
+        }
+        #adminSection {
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 50px;
+            max-height: 50px;
+            border-radius: 4px;
+        }
+        .admin-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="adminSection">
+        <h2>Admin Access</h2>
+        <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+        <button onclick="checkAdmin()">Login</button>
+    </div>
+    
+    <div class="container" id="customerPanel">
+        <h2>Customer Chat List</h2>
+        <div class="admin-only" id="adminInputs">
+            <input type="text" id="name" placeholder="Customer Name">
+            <input type="text" id="contact" placeholder="Contact">
+            <input type="file" id="imageUpload" accept="image/*">
+            <input type="text" id="fabricSize" placeholder="Fabric Size">
+            <input type="text" id="fabricName" placeholder="Fabric Name">
+            <button onclick="addCustomer()" id="addCustomerBtn" disabled>Add Customer</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Image</th>
+                    <th>Fabric Size</th>
+                    <th>Fabric Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="customerList">
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        function checkAdmin() {
+            let password = document.getElementById("adminPassword").value;
+            if (password === "saddikmolla") {
+                document.getElementById("adminSection").style.display = "none";
+                document.getElementById("adminInputs").style.display = "block";
+                document.getElementById("addCustomerBtn").disabled = false;
+            } else {
+                alert("Incorrect Password! Try Again.");
+            }
+        }
+        
+        function addCustomer() {
+            let name = document.getElementById("name").value;
+            let contact = document.getElementById("contact").value;
+            let imageInput = document.getElementById("imageUpload");
+            let fabricSize = document.getElementById("fabricSize").value;
+            let fabricName = document.getElementById("fabricName").value;
+            
+            if (name === "" || contact === "" || fabricSize === "" || fabricName === "") {
+                alert("Please fill in all fields");
+                return;
+            }
+            
+            let imageURL = "";
+            if (imageInput.files.length > 0) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    imageURL = e.target.result;
+                    saveAndDisplayCustomer(name, contact, imageURL, fabricSize, fabricName);
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                saveAndDisplayCustomer(name, contact, "", fabricSize, fabricName);
+            }
+        }
+
+        function saveAndDisplayCustomer(name, contact, imageURL, fabricSize, fabricName) {
+            let table = document.getElementById("customerList");
+            let row = table.insertRow();
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            let cell4 = row.insertCell(3);
+            let cell5 = row.insertCell(4);
+            let cell6 = row.insertCell(5);
+            
+            cell1.innerHTML = name;
+            cell2.innerHTML = contact;
+            cell3.innerHTML = imageURL ? `<img src="${imageURL}" alt="Customer Image">` : "No Image";
+            cell4.innerHTML = fabricSize;
+            cell5.innerHTML = fabricName;
+            cell6.innerHTML = '<button class="delete" onclick="deleteRow(this)">Delete</button>';
+        }
+
+        function deleteRow(btn) {
+            let row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+</body>
+</html>
